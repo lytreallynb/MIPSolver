@@ -1,0 +1,12 @@
+# pyproject.toml
+
+[build-system]
+# These are the packages needed to build your project.
+# pip will install them in an isolated environment before running setup.py.
+requires = [
+    "setuptools>=61.0",
+    "wheel",
+    "cmake>=3.12",
+    "pybind11>=2.6"
+]
+build-backend = "setuptools.build_meta"

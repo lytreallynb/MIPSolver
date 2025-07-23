@@ -1,0 +1,73 @@
+Metadata-Version: 2.1
+Name: mipsolver-pro
+Version: 1.0.0
+Summary: High-performance Mixed-Integer Programming solver (Professional Edition)
+Home-page: https://github.com/yourusername/MIPSolver
+Author: Yutong Lv
+Author-email: your.email@example.com
+Project-URL: Bug Reports, https://github.com/yourusername/MIPSolver/issues
+Project-URL: Source, https://github.com/yourusername/MIPSolver
+Project-URL: Documentation, https://mipsolver.readthedocs.io/
+Keywords: optimization mip solver integer programming commercial
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: Other/Proprietary License
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: pybind11>=2.6
+
+
+# MIPSolver Pro
+
+High-performance C++ Mixed-Integer Programming solver with Python interface.
+
+## Features
+- Optimized Branch & Bound algorithm
+- Support for MPS standard file format  
+- Simple and easy-to-use Python API
+- Commercial-grade algorithm protection
+- Cross-platform support (Windows/Linux/macOS)
+
+## Quick Start
+
+```python
+import mipsolver
+
+# Create optimization problem
+problem = mipsolver.Problem("MyProblem", mipsolver.ObjectiveType.MAXIMIZE)
+
+# Add binary variables
+x0 = problem.add_variable("x0", mipsolver.VariableType.BINARY)
+x1 = problem.add_variable("x1", mipsolver.VariableType.BINARY)
+
+# Set objective function
+problem.set_objective_coefficient(x0, 5.0)
+problem.set_objective_coefficient(x1, 8.0)
+
+# Add constraints
+c0 = problem.add_constraint("c0", mipsolver.ConstraintType.LESS_EQUAL, 10.0)
+problem.add_constraint_coefficient(c0, x0, 2.0)
+problem.add_constraint_coefficient(c0, x1, 4.0)
+
+# Solve
+solver = mipsolver.Solver()
+solution = solver.solve(problem)
+
+print(f"Optimal solution: {solution.get_objective_value()}")
+print(f"Variable values: {solution.get_values()}")
+```
+
+## License
+This software is commercial software protected by intellectual property rights. 
+Use of this software indicates agreement to the relevant license terms.
+    
