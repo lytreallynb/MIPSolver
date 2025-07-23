@@ -37,13 +37,45 @@ A high-performance **Mixed-Integer Programming (MIP)** solver implemented in C++
 - **Disk Space**: 100MB for installation
 
 ### Quick Install
+
+#### For All Platforms (PyPI)
 ```bash
 pip install mipsolver-pro
 ```
 
-### From Wheel Package
+#### Platform-Specific Wheels
+
+**Windows (x64)**:
+```cmd
+pip install mipsolver_pro-1.0.0-cp312-cp312-win_amd64.whl
+```
+
+**macOS (Apple Silicon)**:
 ```bash
 pip install mipsolver_pro-1.0.0-cp312-cp312-macosx_15_0_arm64.whl
+```
+
+**Linux (x64)**:
+```bash
+pip install mipsolver_pro-1.0.0-cp312-cp312-linux_x86_64.whl
+```
+
+### Building from Source
+
+#### Windows Users
+1. Install [Python](https://python.org) and [CMake](https://cmake.org)
+2. Run the build script:
+   ```cmd
+   build_windows.bat
+   ```
+   Or use PowerShell:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File build_windows.ps1
+   ```
+
+#### macOS/Linux Users
+```bash
+python build_wheel.py
 ```
 
 ### Verify Installation
@@ -51,6 +83,8 @@ pip install mipsolver_pro-1.0.0-cp312-cp312-macosx_15_0_arm64.whl
 import mipsolver
 print("MIPSolver Professional Edition - Ready!")
 ```
+
+**📋 Windows-specific installation guide**: See [WINDOWS_INSTALL.md](WINDOWS_INSTALL.md)
 
 ## Quick Start
 

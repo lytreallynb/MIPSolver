@@ -50,6 +50,38 @@ echo Created wheel packages:
 dir dist\*.whl
 
 echo.
+echo To install the wheel package:
+echo   pip install dist\mipsolver_pro-1.0.0-*.whl
+echo.
+echo To test the installation:
+echo   python -c "import mipsolver; print('MIPSolver ready!')"
+echo.
+
+REM Optional: Test the wheel
+set /p test_wheel="Would you like to test the wheel installation? (y/n): "
+if /i "%test_wheel%"=="y" (
+    echo Testing wheel installation...
+    python -m venv test_env
+    call test_env\Scripts\activate.bat
+    
+    for %%i in (dist\*.whl) do (
+        pip install "%%i"
+        python -c "import mipsolver; print('Test passed: MIPSolver imported successfully!')"
+        if %ERRORLEVEL% neq 0 (
+            echo ERROR: Wheel test failed!
+            call deactivate
+            rmdir /s /q test_env
+            pause
+            exit /b 1
+        )
+    )
+    
+    call deactivate
+    rmdir /s /q test_env
+    echo Wheel test completed successfully!
+)
+
+echo.
 echo Creating test environment...
 if exist "test_env" rmdir /s /q "test_env"
 python -m venv test_env
