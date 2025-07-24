@@ -1,176 +1,136 @@
+# setup.py - 处理C++编译并创建单一包
+"""
+此setup.py创建包含以下两部分的单一包:
+1. 纯Python接口 (我们的优化求解器API)
+2. 编译的C++求解器 (实际的优化引擎)
+
+采用成熟的优化求解器分发模式 - 一个包，包含所有功能。
+"""
+
 import os
 import sys
 import subprocess
 from pathlib import Path
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
-from setuptools.command.sdist import sdist
+import pybind11
 
 class CMakeExtension(Extension):
-    def __init__(self, name: str) -> None:
+    """
+    使用CMake构建C++代码的扩展
+    
+    这与普通Extension不同，因为我们使用CMake而不是setuptools的
+    内置C++编译。CMake为复杂的C++构建提供更好的控制。
+    """
+    
+    def __init__(self, name: str, sourcedir: str = "") -> None:
         super().__init__(name, sources=[])
+        self.sourcedir = os.path.abspath(sourcedir)
 
 class CMakeBuild(build_ext):
+    """
+    使用CMake编译C++求解器的自定义构建命令
+    
+    此类处理以下复杂性:
+    1. 为目标平台配置CMake
+    2. 编译C++源代码
+    3. 使用pybind11创建Python绑定
+    4. 将所有内容安装到正确位置
+    
+    最终结果是Python可以导入的编译扩展模块。
+    """
+    
     def build_extension(self, ext: CMakeExtension) -> None:
+        # 找到setuptools希望我们放置编译扩展的位置
         extdir = Path(self.get_ext_fullpath(ext.name)).parent.resolve()
-        build_type = "Release"  # 强制Release模式
+        
+        # 使用Release模式以获得性能
+        build_type = "Release"
+        
+        # 创建构建目录
         build_temp = Path(self.build_temp)
         build_temp.mkdir(parents=True, exist_ok=True)
-
-        cmake_list_dir = Path(__file__).parent.resolve()
-
-        # 确保pybind11可用
-        try:
-            import pybind11
-            pybind11_cmake_dir = pybind11.get_cmake_dir()
-        except ImportError:
-            print("pybind11 not found, installing...")
-            subprocess.check_call([sys.executable, "-m", "pip", "install", "pybind11[global]"])
-            import pybind11
-            pybind11_cmake_dir = pybind11.get_cmake_dir()
-
+        
+        # CMake配置参数
         cmake_args = [
-            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}",
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={build_type}",
-            f"-Dpybind11_DIR={pybind11_cmake_dir}",
+            f"-Dpybind11_DIR={pybind11.get_cmake_dir()}",
             "-DBUILD_PYTHON_BINDINGS=ON",
         ]
         
-        build_args = ["--config", build_type, "--parallel", "4"]
-
-        # Windows特殊设置
+        # 平台特定的CMake设置
         if sys.platform == "win32":
+            # Windows: 使用Visual Studio生成器
             cmake_args += [
                 "-A", "x64" if sys.maxsize > 2**32 else "Win32",
                 "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
             ]
-
-        print(f"Building in {build_temp}")
-        print(f"CMake args: {' '.join(cmake_args)}")
-
+        elif sys.platform == "darwin":
+            # macOS: 处理Intel和Apple Silicon
+            cmake_args += [
+                "-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64"
+            ]
+        
+        # 构建参数
+        build_args = ["--config", build_type, "--parallel"]
+        
+        print(f"在{build_temp}中构建")
+        print(f"CMake参数: {' '.join(cmake_args)}")
+        
         # 运行CMake配置
         subprocess.run(
-            ["cmake", str(cmake_list_dir)] + cmake_args, 
-            cwd=build_temp, 
+            ["cmake", str(ext.sourcedir)] + cmake_args,
+            cwd=build_temp,
             check=True
         )
         
         # 运行CMake构建
         subprocess.run(
-            ["cmake", "--build", ".", "--target", "mipsolver"] + build_args, 
-            cwd=build_temp, 
+            ["cmake", "--build", ".", "--target", "mipsolver._solver"] + build_args,
+            cwd=build_temp,
             check=True
         )
 
-# 禁用源码分发 - 这是关键的保护措施
-class NoSdist(sdist):
-    def run(self):
-        raise RuntimeError(
-            "Source distribution is disabled to protect intellectual property.\n"
-            "This software can only be distributed as pre-compiled wheel packages.\n"
-            "Please use: python -m build --wheel"
-        )
-
-# 主要设置
-setup(
-    name="mipsolver-pro",
-    version="1.0.0",
-    author="Yutong Lv", 
-    author_email="your.email@example.com",
-    description="High-performance Mixed-Integer Programming solver (Professional Edition)",
-    long_description="""
-# MIPSolver Pro
-
-High-performance C++ Mixed-Integer Programming solver with Python interface.
-
-## Features
-- Optimized Branch & Bound algorithm
-- Support for MPS standard file format  
-- Simple and easy-to-use Python API
-- Commercial-grade algorithm protection
-- Cross-platform support (Windows/Linux/macOS)
-
-## Quick Start
-
-```python
-import mipsolver
-
-# Create optimization problem
-problem = mipsolver.Problem("MyProblem", mipsolver.ObjectiveType.MAXIMIZE)
-
-# Add binary variables
-x0 = problem.add_variable("x0", mipsolver.VariableType.BINARY)
-x1 = problem.add_variable("x1", mipsolver.VariableType.BINARY)
-
-# Set objective function
-problem.set_objective_coefficient(x0, 5.0)
-problem.set_objective_coefficient(x1, 8.0)
-
-# Add constraints
-c0 = problem.add_constraint("c0", mipsolver.ConstraintType.LESS_EQUAL, 10.0)
-problem.add_constraint_coefficient(c0, x0, 2.0)
-problem.add_constraint_coefficient(c0, x1, 4.0)
-
-# Solve
-solver = mipsolver.Solver()
-solution = solver.solve(problem)
-
-print(f"Optimal solution: {solution.get_objective_value()}")
-print(f"Variable values: {solution.get_values()}")
-```
-
-## License
-This software is commercial software protected by intellectual property rights. 
-Use of this software indicates agreement to the relevant license terms.
-    """,
-    long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/MIPSolver",
+def main():
+    """
+    主setup函数 - 创建单一统一包
     
-    # 关键：只有CMake扩展，没有Python源码包
-    ext_modules=[CMakeExtension("mipsolver")],
+    这个设计遵循现代优化求解器的最佳实践:
+    1. Python API层提供友好接口
+    2. C++求解器核心提供高性能计算
+    3. pybind11绑定层实现无缝交互
     
-    # 自定义命令
-    cmdclass={
-        "build_ext": CMakeBuild,
-        "sdist": NoSdist,  # 禁止源码分发
-    },
+    用户通过 'pip install mipsolver' 获得完整功能。
+    """
     
-    zip_safe=False,
-    python_requires=">=3.7",
+    # 查找mipsolver包
+    packages = find_packages(include=['mipsolver', 'mipsolver.*'])
     
-    # 运行时依赖
-    install_requires=[
-        "pybind11>=2.6",
-    ],
+    # 定义C++扩展模块
+    ext_modules = [
+        CMakeExtension("mipsolver._solver", sourcedir=".")
+    ]
     
-    # 元数据
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Science/Research", 
-        "License :: Other/Proprietary License",
-        "Operating System :: Microsoft :: Windows",
-        "Operating System :: POSIX :: Linux",
-        "Operating System :: MacOS",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8", 
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Topic :: Scientific/Engineering :: Mathematics",
-    ],
+    # 包数据 - 包含类型提示
+    package_data = {
+        "mipsolver": ["py.typed"]
+    }
     
-    keywords="optimization mip solver integer programming commercial",
-    
-    # 重要：不包含任何源码文件
-    include_package_data=False,
-    package_data={},
-    
-    # 项目URL
-    project_urls={
-        "Bug Reports": "https://github.com/yourusername/MIPSolver/issues",
-        "Source": "https://github.com/yourusername/MIPSolver",
-        "Documentation": "https://mipsolver.readthedocs.io/",
-    },
-)
+    setup(
+        # 包结构
+        packages=packages,
+        package_data=package_data,
+        
+        # C++扩展
+        ext_modules=ext_modules,
+        cmdclass={"build_ext": CMakeBuild},
+        
+        # 确保包正确工作
+        zip_safe=False,
+        include_package_data=True,
+    )
+
+if __name__ == "__main__":
+    main()

@@ -1,8 +1,0 @@
-pyproject.toml
-setup.py
-mipsolver_pro.egg-info/PKG-INFO
-mipsolver_pro.egg-info/SOURCES.txt
-mipsolver_pro.egg-info/dependency_links.txt
-mipsolver_pro.egg-info/not-zip-safe
-mipsolver_pro.egg-info/requires.txt
-mipsolver_pro.egg-info/top_level.txt

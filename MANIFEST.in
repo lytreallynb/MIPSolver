@@ -1,0 +1,30 @@
+# MANIFEST.in - 源分发文件包含规则
+
+# 包含核心项目文件
+include README.md
+include pyproject.toml
+include requirements.txt
+
+# 包含所有C++源文件和头文件
+recursive-include src *.cpp *.h
+
+# 包含CMake配置
+include CMakeLists.txt
+
+# 包含Python绑定
+recursive-include bindings *.cpp
+
+# 包含API层
+recursive-include api *.cpp *.h
+
+# 包含Python源文件
+recursive-include mipsolver *.py *.typed
+
+# 排除缓存和构建文件
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude *.egg-info
+prune build
+prune dist

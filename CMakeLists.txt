@@ -68,13 +68,13 @@ if(BUILD_PYTHON_BINDINGS)
     find_package(pybind11 REQUIRED)
     
     # Python模块 - 这将被打包到wheel中
-    pybind11_add_module(mipsolver bindings/py_bindings.cpp)
+    pybind11_add_module(mipsolver._solver bindings/python_bindings.cpp)
     
     # 链接到核心库
-    target_link_libraries(mipsolver PRIVATE mipsolver_core)
+    target_link_libraries(mipsolver._solver PRIVATE mipsolver_core)
     
     # 确保Python模块找不到源码
-    target_compile_definitions(mipsolver PRIVATE VERSION_INFO="${PROJECT_VERSION}")
+    target_compile_definitions(mipsolver._solver PRIVATE VERSION_INFO="${PROJECT_VERSION}")
     
     # Windows特殊设置
     if(WIN32 AND TARGET mipsolver_shared)

@@ -1,12 +1,99 @@
-# pyproject.toml
-
+# pyproject.toml - 现代Python打包配置
 [build-system]
-# These are the packages needed to build your project.
-# pip will install them in an isolated environment before running setup.py.
 requires = [
     "setuptools>=61.0",
     "wheel",
-    "cmake>=3.12",
-    "pybind11>=2.6"
+    "pybind11>=2.10.0",
+    "cmake>=3.12"
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "mipsolver"
+version = "1.0.0"
+description = "高性能混合整数规划求解器，现代Python API"
+readme = "README.md"
+authors = [
+    {name = "lytreallynb"}
+]
+
+# 支持Python 3.8到3.13
+requires-python = ">=3.8"
+
+# 运行时依赖
+dependencies = []
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+keywords = ["optimization", "linear-programming", "integer-programming", "mip", "solver"]
+
+[project.urls]
+Homepage = "https://github.com/lytreallynb/MIPSolver"
+Repository = "https://github.com/lytreallynb/MIPSolver.git"
+Documentation = "https://github.com/lytreallynb/MIPSolver#readme"
+"Bug Tracker" = "https://github.com/lytreallynb/MIPSolver/issues"
+
+# 告诉setuptools在哪里找到Python包
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mipsolver*"]
+
+# 包含类型提示
+[tool.setuptools.package-data]
+mipsolver = ["py.typed"]
+
+# 跨平台轮子构建配置
+[tool.cibuildwheel]
+# 构建这些Python版本 (包括3.13.5)
+build = "cp38-* cp39-* cp310-* cp311-* cp312-* cp313-*"
+
+# 跳过32位构建和PyPy
+skip = "*-win32 *-manylinux_i686 pp*"
+
+# 构建目标平台:
+# Linux: x86_64
+# macOS: x86_64 和 arm64 (Intel和Apple Silicon)
+# Windows: x64
+build-verbosity = 1
+
+[tool.cibuildwheel.environment]
+CMAKE_BUILD_PARALLEL_LEVEL = "4"
+
+# 平台特定构建设置
+[tool.cibuildwheel.linux]
+before-all = "yum install -y cmake3"
+
+[tool.cibuildwheel.macos]
+before-all = "brew install cmake"
+
+[tool.cibuildwheel.windows]
+before-all = "choco install cmake"
+
+# 开发工具配置
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py313']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

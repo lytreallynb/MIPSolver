@@ -1,0 +1,3 @@
+# python/mipsolver/py.typed
+# This empty file tells type checkers that this package includes type hints
+# It's a Python packaging standard for typed packages
