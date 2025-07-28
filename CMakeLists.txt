@@ -49,7 +49,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/api/mipsolver_c_api.cpp")
     # 设置输出名称
     set_target_properties(mipsolver_shared PROPERTIES 
         OUTPUT_NAME "mipsolver"
-        VERSION 1.0.0
+        VERSION 1.0.5
         SOVERSION 1
     )
 endif()
@@ -67,18 +67,24 @@ option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
 if(BUILD_PYTHON_BINDINGS)
     find_package(pybind11 REQUIRED)
     
+    set(PY_BINDINGS_SRC "${CMAKE_SOURCE_DIR}/bindings/python_bindings.cpp")
+    message(STATUS "Python binding source path: ${PY_BINDINGS_SRC}")
+    if(NOT EXISTS ${PY_BINDINGS_SRC})
+        message(FATAL_ERROR "FATAL: Python binding source file not found at ${PY_BINDINGS_SRC}")
+    endif()
+
     # Python模块 - 这将被打包到wheel中
-    pybind11_add_module(mipsolver._solver bindings/python_bindings.cpp)
+    pybind11_add_module(_solver MODULE ${PY_BINDINGS_SRC})
     
     # 链接到核心库
-    target_link_libraries(mipsolver._solver PRIVATE mipsolver_core)
+    target_link_libraries(_solver PRIVATE mipsolver_core)
     
     # 确保Python模块找不到源码
-    target_compile_definitions(mipsolver._solver PRIVATE VERSION_INFO="${PROJECT_VERSION}")
+    target_compile_definitions(_solver PRIVATE VERSION_INFO="${PROJECT_VERSION}")
     
     # Windows特殊设置
     if(WIN32 AND TARGET mipsolver_shared)
-        target_link_libraries(mipsolver PRIVATE mipsolver_shared)
+        target_link_libraries(_solver PRIVATE mipsolver_shared)
     endif()
 endif()
 

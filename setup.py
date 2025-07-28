@@ -43,6 +43,7 @@ class CMakeBuild(build_ext):
     def build_extension(self, ext: CMakeExtension) -> None:
         # 找到setuptools希望我们放置编译扩展的位置
         extdir = Path(self.get_ext_fullpath(ext.name)).parent.resolve()
+        extdir = os.path.join(extdir, "mipsolver")
         
         # 使用Release模式以获得性能
         build_type = "Release"
@@ -88,7 +89,7 @@ class CMakeBuild(build_ext):
         
         # 运行CMake构建
         subprocess.run(
-            ["cmake", "--build", ".", "--target", "mipsolver._solver"] + build_args,
+            ["cmake", "--build", ".", "--target", "_solver"] + build_args,
             cwd=build_temp,
             check=True
         )
@@ -110,7 +111,7 @@ def main():
     
     # 定义C++扩展模块
     ext_modules = [
-        CMakeExtension("mipsolver._solver", sourcedir=".")
+        CMakeExtension("_solver", sourcedir=".")
     ]
     
     # 包数据 - 包含类型提示
