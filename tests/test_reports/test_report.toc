@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}问题概述}{2}{}%
+\contentsline {subsection}{\numberline {1.1}数学模型}{2}{}%
+\contentsline {section}{\numberline {2}求解结果}{2}{}%
+\contentsline {subsection}{\numberline {2.1}求解状态信息}{2}{}%
+\contentsline {subsection}{\numberline {2.2}最优解}{2}{}%
+\contentsline {section}{\numberline {3}问题分析}{3}{}%
+\contentsline {subsection}{\numberline {3.1}问题规模分析}{3}{}%
+\contentsline {subsection}{\numberline {3.2}求解器性能分析}{3}{}%
+\contentsline {subsection}{\numberline {3.3}解的质量评估}{4}{}%
+\contentsline {section}{\numberline {4}总结与结论}{4}{}%
+\contentsline {subsection}{\numberline {4.1}求解总结}{4}{}%
+\contentsline {subsection}{\numberline {4.2}技术说明}{4}{}%

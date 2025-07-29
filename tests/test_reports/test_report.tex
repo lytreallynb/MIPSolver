@@ -1,0 +1,196 @@
+
+\documentclass[12pt,a4paper]{article}
+\usepackage{xeCJK}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+
+% 设置页面边距
+\geometry{margin=2.5cm}
+
+% 设置中文字体 (使用系统字体)
+\setCJKmainfont{PingFang SC}  % macOS系统字体
+\setCJKsansfont{PingFang SC}
+\setCJKmonofont{PingFang SC}
+
+% 如果系统没有PingFang SC，可以使用其他中文字体
+% \setCJKmainfont{SimSun}  % Windows
+% \setCJKmainfont{Noto Sans CJK SC}  % Linux
+
+% 设置页眉页脚
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{MIPSolver 求解报告}
+\fancyhead[R]{2025年07月29日 15:33:21}
+\fancyfoot[C]{\thepage}
+
+% 标题设置
+\title{\textbf{MIPSolver 混合整数规划求解报告}}
+\author{系统自动生成}
+\date{2025年07月29日 15:33:21}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+
+\tableofcontents
+\newpage
+
+\section{问题概述}
+
+\subsection{数学模型}
+
+本问题为混合整数线性规划问题，数学模型如下：
+
+\begin{align}
+\text{目标函数：} \quad & \min \sum_{j=1}^{n} c_j x_j \label{eq:objective}\\
+\text{约束条件：} \quad & \sum_{j=1}^{n} a_{ij} x_j \leq b_i, \quad i = 1, 2, \ldots, m \label{eq:constraints}\\
+& x_j \geq 0, \quad j = 1, 2, \ldots, n \label{eq:nonnegativity}\\
+& x_j \in \mathbb{Z}, \quad j \in I \label{eq:integrality}
+\end{align}
+
+其中：
+\begin{itemize}
+\item $x_j$ 为决策变量，$j = 1, 2, \ldots, n$
+\item $c_j$ 为目标函数系数
+\item $a_{ij}$ 为约束系数矩阵元素
+\item $b_i$ 为约束右端常数
+\item $I$ 为整数变量的指标集合
+\end{itemize}
+
+\section{求解结果}
+
+\subsection{求解状态信息}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{项目} & \textbf{结果} \\
+\midrule
+求解状态 & OPTIMAL \\
+目标函数值 & 387.853012 \\
+求解时间 & 0.0003 秒 \\
+迭代次数 & 20 \\
+使用求解器 & Branch \& Bound \\
+变量数量 & 24 \\
+\bottomrule
+\end{tabular}
+\caption{求解状态信息汇总}
+\end{table}
+
+\subsection{最优解}
+
+求解得到的最优解如下：
+
+\begin{longtable}{lcc}
+\toprule
+\textbf{变量名} & \textbf{最优值} & \textbf{变量类型} \\
+\midrule
+X0 & 0.194654 & 连续 \\
+X1 & 7.279864 & 连续 \\
+X2 & 2.525481 & 连续 \\
+X3 & 6.587987 & 连续 \\
+X4 & 14.236565 & 连续 \\
+X5 & 9.175448 & 连续 \\
+X6 & 9.838832 & 连续 \\
+X7 & 17.682443 & 连续 \\
+X8 & 12.478725 & 连续 \\
+X9 & 3.378527 & 连续 \\
+X10 & 10.801128 & 连续 \\
+X11 & 5.820345 & 连续 \\
+Y0 & 0.019465 & 连续 \\
+Y1 & 0.727986 & 连续 \\
+Y2 & 0.252548 & 连续 \\
+Y3 & 0.329399 & 连续 \\
+Y4 & 0.474552 & 连续 \\
+Y5 & 0.305848 & 连续 \\
+Y6 & 0.491942 & 连续 \\
+Y7 & 0.442061 & 连续 \\
+\midrule
+\multicolumn{3}{c}{\textit{... 省略其余 4 个变量 ...}} \\
+
+\bottomrule
+\caption{决策变量最优取值}
+\end{longtable}
+
+\section{问题分析}
+
+\subsection{问题规模分析}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{问题特征} & \textbf{数量} \\
+\midrule
+决策变量总数 & 24 \\
+连续变量 & 24 \\
+整数变量 & 0 \\
+二进制变量 & 0 \\
+约束数量 & 19 \\
+\bottomrule
+\end{tabular}
+\caption{问题规模统计}
+\end{table}
+
+\subsection{求解器性能分析}
+
+\begin{itemize}
+\item \textbf{使用求解器：}Branch \& Bound
+\item \textbf{求解算法：}基于C++实现的分支定界法
+\item \textbf{线性松弛：}单纯形法
+\item \textbf{求解效率：}0.0003秒完成求解
+\item \textbf{迭代收敛：}经过20次迭代达到最优解
+\end{itemize}
+
+\subsection{解的质量评估}
+
+根据求解状态 \textbf{OPTIMAL}，可以得出以下结论：
+
+\begin{itemize}
+\item 问题具有可行解，求解器成功找到最优解
+\item 目标函数最优值为 387.853012
+\item 所有约束条件均得到满足
+\item 整数变量取值符合整数约束要求
+\end{itemize}
+
+\section{总结与结论}
+
+\subsection{求解总结}
+
+本次优化求解任务已成功完成，主要成果如下：
+
+\begin{enumerate}
+\item \textbf{问题建模：}成功构建了包含 24 个决策变量和 19 个约束的混合整数线性规划模型
+\item \textbf{算法求解：}采用高性能C++实现的分支定界算法，确保求解的准确性与效率
+\item \textbf{最优解获得：}在 0.0003 秒内找到最优解，目标函数值为 387.853012
+\item \textbf{解的验证：}所有约束条件均得到满足，整数约束得到严格执行
+\end{enumerate}
+
+\subsection{技术说明}
+
+\begin{itemize}
+\item \textbf{软件平台：}MIPSolver v1.0 - 基于Python和C++的混合整数规划求解器
+\item \textbf{求解引擎：}自主研发的高性能C++优化核心
+\item \textbf{报告生成：}支持XeLaTeX格式，完美呈现中文内容
+\item \textbf{生成时间：}2025年07月29日 15:33:21
+\end{itemize}
+
+\vspace{1cm}
+
+\begin{center}
+\textit{--- 报告结束 ---}
+
+\small{此报告由 MIPSolver 系统自动生成}
+\end{center}
+
+\end{document}

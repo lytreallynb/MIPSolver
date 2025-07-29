@@ -1,0 +1,77 @@
+XeLaTeX 编译说明
+===============================
+
+文件：/Users/yutonglv/MIPSolver/test_report.tex
+生成时间：2025-07-29 15:33:21
+
+一、系统要求
+-----------
+1. 安装完整的LaTeX发行版：
+   - macOS: MacTeX (推荐)
+   - Windows: MiKTeX 或 TeX Live
+   - Linux: TeX Live
+
+2. 确保已安装XeLaTeX：
+   打开终端/命令提示符，运行：xelatex --version
+
+3. 中文字体要求：
+   - macOS: 系统自带 PingFang SC 字体
+   - Windows: 需要安装中文字体（如 SimSun）
+   - Linux: 安装 fonts-noto-cjk 包
+
+二、编译方法
+-----------
+
+方法一：命令行编译（推荐）
+1. 打开终端/命令提示符
+2. 切换到文件所在目录：cd "文件目录路径"
+3. 运行编译命令：
+   xelatex "/Users/yutonglv/MIPSolver/test_report.tex"
+4. 如果包含目录，再次运行：
+   xelatex "/Users/yutonglv/MIPSolver/test_report.tex"
+
+方法二：LaTeX编辑器
+1. 使用 TeXworks, TeXstudio, VS Code 等编辑器
+2. 打开 .tex 文件
+3. 设置编译器为 XeLaTeX
+4. 点击编译按钮
+
+三、故障排除
+-----------
+
+问题1：找不到字体
+解决：
+- macOS: 确保系统已安装 PingFang SC
+- Windows: 将第689行改为 \setCJKmainfont{SimSun}
+- Linux: 将第689行改为 \setCJKmainfont{Noto Sans CJK SC}
+
+问题2：编译错误
+解决：
+1. 检查 LaTeX 发行版是否完整安装
+2. 更新宏包：tlmgr update --self --all
+3. 检查文件路径中是否包含特殊字符
+
+问题3：中文显示异常
+解决：
+1. 确保使用 XeLaTeX 而非 pdfLaTeX
+2. 检查中文字体是否正确安装
+3. 确认文件编码为 UTF-8
+
+四、预期输出
+-----------
+成功编译后将生成：
+- /Users/yutonglv/MIPSolver/test_report.pdf - 最终PDF报告
+- /Users/yutonglv/MIPSolver/test_report.aux - 辅助文件
+- /Users/yutonglv/MIPSolver/test_report.log - 编译日志
+- /Users/yutonglv/MIPSolver/test_report.toc - 目录文件
+
+五、技术支持
+-----------
+如遇问题，请检查：
+1. LaTeX 发行版版本和完整性
+2. XeLaTeX 编译器可用性
+3. 中文字体安装情况
+4. 文件编码格式（应为UTF-8）
+
+生成工具：MIPSolver v1.0
+技术文档：https://github.com/your-repo/mipsolver
