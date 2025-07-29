@@ -5,7 +5,7 @@ MIPSolver - 混合整数规划求解器
 支持C++高性能求解器和Python fallback。
 """
 
-__version__ = "1.0.9"
+__version__ = "1.0.5"
 __author__ = "lytreallynb"
 __email__ = "lytreallynb@example.com"
 
@@ -17,31 +17,15 @@ import os
 _has_solver = False
 _solver = None
 
-def _import_solver():
-    """延迟导入C++求解器，避免循环导入问题"""
-    global _solver, _has_solver
+try:
+    from . import _solver
+    _has_solver = True
+    print("MIPSolver: Using high-performance C++ solver backend")
+except ImportError as e:
+    _has_solver = False
+    print(f"MIPSolver: C++ solver not available ({e})")
+    print("MIPSolver: Using Python fallback (limited functionality)")
     
-    if _solver is not None:
-        return _solver
-        
-    try:
-        # 使用绝对导入避免相对导入的问题
-        import mipsolver._solver as solver_module
-        _solver = solver_module
-        _has_solver = True
-        print("MIPSolver: Using high-performance C++ solver backend")
-        return _solver
-    except ImportError as e:
-        _has_solver = False
-        print(f"MIPSolver: C++ solver not available ({e})")
-        print("MIPSolver: Using Python fallback (limited functionality)")
-        return None
-
-# 立即尝试导入
-_import_solver()
-
-# 如果没有C++求解器，创建fallback实现
-if not _has_solver:
     # 创建fallback实现
     class MockSolution:
         def __init__(self):
@@ -94,7 +78,7 @@ if not _has_solver:
         def set_variable_bounds(self, var_idx, lb, ub):
             pass
     
-    # 创建mock模块覆盖_solver变量
+    # 创建mock模块
     class _solver:
         Solver = MockSolver
         Problem = MockProblem

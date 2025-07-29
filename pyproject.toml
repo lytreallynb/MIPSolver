@@ -10,14 +10,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mipsolver"
-version = "1.0.9"
+version = "1.0.5"
 description = "高性能混合整数规划求解器，现代Python API"
 readme = "README.md"
 authors = [
     {name = "lytreallynb"}
 ]
 
-# 支持Python 3.8到3.12，主要针对3.12优化
+# 支持Python 3.8到3.13
 requires-python = ">=3.8"
 
 # 运行时依赖
@@ -33,6 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: C++",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Libraries :: Python Modules",

@@ -7,6 +7,7 @@ from typing import Optional, Union, List, Dict, Any
 from .constants import *
 from .expressions import LinExpr
 from .exceptions import MIPSolverError, OptimizationError
+import mipsolver
 
 
 
@@ -154,21 +155,14 @@ class Model:
         self._status = UNKNOWN
         self._obj_val = 0.0
         
-        # 动态导入避免循环导入
-        import sys
-        mipsolver_module = sys.modules[__name__.split('.')[0]]
-        
-        # 确保 solver 已正确导入
-        if not mipsolver_module._has_solver:
-            # 尝试重新导入
-            mipsolver_module._import_solver()
-            
-        if not mipsolver_module._has_solver:
+        # 尝试导入C++求解器后端
+        # 这将由编译的扩展模块提供
+        if not mipsolver._has_solver:
             raise MIPSolverError(
                 "未找到C++求解器后端。请确保MIPSolver已正确安装。\n"
                 "尝试: pip install --force-reinstall mipsolver"
             )
-        self._solver = mipsolver_module._solver.Solver()
+        self._solver = mipsolver._solver.Solver()
     
     @property
     def name(self) -> str:
@@ -323,20 +317,18 @@ class Model:
         这是我们从Python表示转换到C++求解器内部格式的地方。
         此方法在用户友好的Python API和高性能C++求解器核心之间架起桥梁。
         """
-        # 动态导入避免循环导入
-        import sys
-        mipsolver_module = sys.modules['mipsolver']
+        # C++ problem is built using the _solver module
         
         # 创建C++问题对象
-        obj_type = mipsolver_module._solver.ObjectiveType.MAXIMIZE if self._objective_sense == MAXIMIZE else mipsolver_module._solver.ObjectiveType.MINIMIZE
-        problem = mipsolver_module._solver.Problem(self._name, obj_type)
+        obj_type = mipsolver._solver.ObjectiveType.MAXIMIZE if self._objective_sense == MAXIMIZE else mipsolver._solver.ObjectiveType.MINIMIZE
+        problem = mipsolver._solver.Problem(self._name, obj_type)
         
         # 向C++问题添加变量
         for var in self._variables:
             vtype_map = {
-                CONTINUOUS: mipsolver_module._solver.VariableType.CONTINUOUS,
-                BINARY: mipsolver_module._solver.VariableType.BINARY,
-                INTEGER: mipsolver_module._solver.VariableType.INTEGER
+                CONTINUOUS: mipsolver._solver.VariableType.CONTINUOUS,
+                BINARY: mipsolver._solver.VariableType.BINARY,
+                INTEGER: mipsolver._solver.VariableType.INTEGER
             }
             cpp_vtype = vtype_map[var.vtype]
             
@@ -351,9 +343,9 @@ class Model:
         # 添加约束
         for constraint in self._constraints:
             sense_map = {
-                LESS_EQUAL: mipsolver_module._solver.ConstraintType.LESS_EQUAL,
-                GREATER_EQUAL: mipsolver_module._solver.ConstraintType.GREATER_EQUAL,
-                EQUAL: mipsolver_module._solver.ConstraintType.EQUAL
+                LESS_EQUAL: mipsolver._solver.ConstraintType.LESS_EQUAL,
+                GREATER_EQUAL: mipsolver._solver.ConstraintType.GREATER_EQUAL,
+                EQUAL: mipsolver._solver.ConstraintType.EQUAL
             }
             cpp_sense = sense_map[constraint.sense]
             
@@ -375,12 +367,8 @@ class Model:
         Args:
             filename: 模型文件路径 (.mps格式支持)
         """
-        # 动态导入避免循环导入
-        import sys
-        mipsolver_module = sys.modules['mipsolver']
-        
         # 导入C++ MPS解析器
-        cpp_problem = mipsolver_module._solver.MPSParser.parse_from_file(filename)
+        cpp_problem = mipsolver._solver.MPSParser.parse_from_file(filename)
         
         # 转换回Python模型表示
         # 这需要实现从C++问题对象提取变量/约束
