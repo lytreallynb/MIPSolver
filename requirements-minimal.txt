@@ -1,0 +1,16 @@
+# MIPSolver 最小运行时依赖
+# Minimal runtime dependencies for production use
+
+# Core Python packages (already included in standard library)
+# tkinter - GUI framework (built-in on most platforms)
+
+# Note: MIPSolver core library has no external runtime dependencies
+# The C++ solver backend is compiled and bundled as a Python extension
+
+# For Linux users who need tkinter:
+# Ubuntu/Debian: sudo apt-get install python3-tk
+# CentOS/RHEL: sudo yum install tkinter
+# Arch Linux: sudo pacman -S tk
+
+# Optional: For better error reporting
+# traceback - built-in module

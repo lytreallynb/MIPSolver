@@ -66,6 +66,10 @@ MIPSolver/
 
 1. **安装依赖**
    ```bash
+   # 完整开发环境
+   pip install -r requirements-dev.txt
+   
+   # 或仅安装运行时依赖
    pip install -r requirements.txt
    ```
 

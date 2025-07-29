@@ -1,15 +1,15 @@
 # MIPSolver 跨平台桌面应用程序指南
 
-## 🌍 跨平台支持证明
+## 跨平台支持证明
 
 MIPSolver 是真正的跨平台应用程序，支持以下操作系统：
 
 ### 支持的平台
-- ✅ **macOS** (Intel x64 / Apple Silicon arm64)
-- ✅ **Windows** (x64 / x86)
-- ✅ **Linux** (x64 / arm64)
+- **macOS** (Intel x64 / Apple Silicon arm64)
+- **Windows** (x64 / x86)
+- **Linux** (x64 / arm64)
 
-## 📋 跨平台架构设计
+## 跨平台架构设计
 
 ### 1. C++ 求解器后端
 - **macOS**: `_solver.cpython-312-darwin.so`
@@ -26,7 +26,7 @@ MIPSolver 是真正的跨平台应用程序，支持以下操作系统：
   - Windows: `.exe` 可执行文件
   - Linux: 可执行二进制文件
 
-## 🖥️ Windows 使用指南
+## Windows 使用指南
 
 ### 在 Windows 上构建
 ```bash
@@ -46,7 +46,7 @@ python build.py
 - **内存**: 最少 512MB RAM
 - **磁盘**: 100MB 可用空间
 
-## 🐧 Linux 使用指南
+## Linux 使用指南
 
 ### 在 Linux 上构建
 ```bash
@@ -66,7 +66,7 @@ python3 build.py
 - **桌面环境**: GNOME, KDE, XFCE 等（需要 X11 支持）
 - **依赖**: 系统已包含所需库
 
-## 🔧 跨平台特性验证
+## 跨平台特性验证
 
 ### 1. 界面适配
 - **macOS**: 原生 Aqua 外观，支持深色模式
@@ -89,7 +89,7 @@ file_path = Path("examples") / "test.mps"  # 自动适配路径分隔符
 - **XeLaTeX** 引擎，所有平台统一支持中文
 - 自动检测系统可用字体
 
-## 📦 构建输出对比
+## 构建输出对比
 
 | 平台 | 应用程序文件 | 分发包名称 | 大小预估 |
 |------|--------------|------------|----------|
@@ -97,7 +97,7 @@ file_path = Path("examples") / "test.mps"  # 自动适配路径分隔符
 | **Windows** | `MIPSolver.exe` | `MIPSolver-v1.0-Windows-x64.zip` | ~45MB |
 | **Linux** | `MIPSolver` | `MIPSolver-v1.0-Linux-x86_64.zip` | ~40MB |
 
-## 🚀 自动化构建流程
+## 自动化构建流程
 
 ### GitHub Actions 支持 (可选)
 ```yaml
@@ -125,7 +125,7 @@ jobs:
           path: dist/*.zip
 ```
 
-## 📋 平台特定注意事项
+## 平台特定注意事项
 
 ### Windows
 - 可能需要添加防病毒软件白名单
@@ -139,7 +139,7 @@ jobs:
 - 需要图形桌面环境
 - 部分发行版可能需要安装额外的 GUI 库
 
-## 🔍 验证跨平台兼容性
+## 验证跨平台兼容性
 
 可以通过以下方式验证应用程序的跨平台特性：
 

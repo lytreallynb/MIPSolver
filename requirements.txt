@@ -1,0 +1,30 @@
+# MIPSolver 依赖库
+# Core dependencies for development and runtime
+
+# GUI Framework
+tkinter-dev>=8.6.0; sys_platform == "linux"
+
+# Desktop Application Packaging
+PyInstaller>=6.0.0
+
+# Build System (for development)
+setuptools>=61.0
+wheel
+cmake>=3.12
+
+# Python C++ Bindings
+pybind11>=2.10.0
+
+# Optional: Development Tools
+pytest>=7.0.0
+black>=22.0.0
+isort>=5.10.0
+mypy>=1.0.0
+
+# Optional: Documentation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.2.0
+
+# Optional: Jupyter Notebook Support
+jupyter>=1.0.0
+ipykernel>=6.0.0
