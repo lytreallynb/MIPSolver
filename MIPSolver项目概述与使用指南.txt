@@ -1,0 +1,311 @@
+# MIPSolver 项目概述与使用指南
+
+## 项目简介
+
+MIPSolver 是一个高性能的混合整数线性规划(MIP)求解器，集成了现代优化算法和用户友好的界面。该项目采用C++实现核心算法以保证性能，同时提供Python接口方便用户使用，还包含图形化界面支持直观的问题建模和结果分析。
+
+### 核心特点
+
+- **高性能C++求解引擎**：实现分支定界、单纯形等算法
+- **用户友好的Python API**：简洁易用的建模接口
+- **直观的图形界面**：支持可视化问题定义和解析
+- **标准格式支持**：兼容MPS等工业标准格式
+- **跨平台兼容性**：支持Windows、macOS和Linux
+- **LaTeX报告生成**：自动生成专业求解报告（支持中文）
+
+## 代码架构
+
+项目采用分层架构设计，主要分为以下几个模块：
+
+### 1. 核心求解模块 (`src/`)
+
+- **`src/core/`**：基础数据结构和接口定义
+  - `core.h/cpp`：变量、约束、问题等基本类型
+  - `solution.h`：解结构和状态定义
+  - `sota_algorithms.h`：前沿算法实现（ALNS等）
+
+- **`src/solvers/`**：具体求解算法实现
+  - `branch_bound_solver.h`：分支定界算法
+  - `simplex_solver.h`：单纯形法实现
+  - `parser.h`：问题格式解析器
+
+### 2. 接口层
+
+- **`api/`**：C语言API接口
+  - `mipsolver_c_api.h/cpp`：标准C接口，方便集成到其他语言
+
+- **`bindings/`**：Python绑定
+  - `python_bindings.cpp`：使用pybind11将C++功能暴露给Python
+
+### 3. Python包 (`mipsolver/`)
+
+- `__init__.py`：包初始化和版本信息
+- `model.py`：高级建模接口
+- `expressions.py`：数学表达式处理
+- `constants.py`：常量定义
+- `exceptions.py`：异常类型定义
+- `solver_monitor.py`：求解过程监控
+
+### 4. 图形界面 (`gui/`)
+
+- `gui_solver.py`：桌面GUI应用
+- `web_gui.py`：Web界面实现
+- `api_server.py`：API服务器
+- `interactive_solver.py`：交互式求解器
+
+### 5. 辅助工具
+
+- `examples/`：使用示例和测试数据
+- `docs/`：文档和使用指南
+- `scripts/`：实用脚本工具
+- `tests/`：单元测试和集成测试
+
+## 项目结构树形图
+
+```
+MIPSolver/
+├── README.md                    # 项目说明
+├── INSTALL.md                   # 安装指南
+├── LICENSE                      # 许可证文件
+├── main.py                      # 桌面应用入口
+├── setup.py                     # 安装脚本
+├── pyproject.toml              # 项目配置
+├── requirements.txt            # 依赖列表
+|
+├── src/                         # C++源代码
+│   ├── core/                    # 核心数据结构
+│   │   ├── core.cpp
+│   │   ├── core.h
+│   │   ├── solution.h
+│   │   └── sota_algorithms.h
+│   ├── solvers/                 # 算法实现
+│   │   ├── branch_bound_solver.h
+│   │   ├── simplex_solver.h
+│   │   └── parser.h
+│
+├── api/                         # C API接口
+│   ├── mipsolver_c_api.cpp
+│   └── mipsolver_c_api.h
+│
+├── bindings/                    # Python绑定
+│   └── python_bindings.cpp
+│
+├── mipsolver/                   # Python包
+│   ├── __init__.py
+│   ├── model.py
+│   ├── expressions.py
+│   ├── constants.py
+│   ├── exceptions.py
+│   └── solver_monitor.py
+│
+├── gui/                         # 图形界面
+│   ├── gui_solver.py
+│   ├── web_gui.py
+│   ├── api_server.py
+│   └── interactive_solver.py
+│
+├── examples/                    # 示例文件
+│   ├── python/                  # Python API示例
+│   └── mps/                     # MPS格式测试文件
+│
+├── docs/                        # 文档
+│   ├── CROSS_PLATFORM_GUIDE.md
+│   ├── WINDOWS_USAGE.md
+│   └── GUI_README.md
+│
+├── scripts/                     # 脚本工具
+├── build/                       # 构建目录
+└── tests/                       # 测试文件
+```
+
+## Git工作流程
+
+项目采用标准的Git工作流程进行版本控制和协作开发：
+
+### 分支策略
+
+- **main**：主分支，保持稳定可发布状态
+- **develop**：开发分支，集成最新功能
+- **feature/xxx**：功能分支，用于开发单个功能
+- **bugfix/xxx**：修复分支，用于解决特定问题
+- **release/x.y.z**：发布分支，准备特定版本发布
+
+### 常用Git命令
+
+```bash
+# 克隆仓库
+git clone https://github.com/lytreallynb/MIPSolver.git
+
+# 创建并切换到新分支
+git checkout -b feature/new-feature
+
+# 提交更改
+git add .
+git commit -m "实现新功能: xxx"
+
+# 推送到远程仓库
+git push origin feature/new-feature
+
+# 更新本地仓库
+git pull origin develop
+
+# 合并分支
+git merge feature/new-feature
+```
+
+## 安装指南
+
+### 依赖项
+
+- Python 3.8+
+- C++编译器（支持C++17）
+- CMake 3.12+
+- pybind11 2.10.0+
+
+### 从源码安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/lytreallynb/MIPSolver.git
+cd MIPSolver
+
+# 创建并激活虚拟环境（可选）
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate  # Windows
+
+# 安装开发依赖
+pip install -r requirements-dev.txt
+
+# 编译并安装
+pip install -e .
+```
+
+### 使用pip安装
+
+```bash
+pip install mipsolver
+```
+
+## 使用示例
+
+### Python API
+
+```python
+from mipsolver import Model, CONTINUOUS, INTEGER, BINARY, MAXIMIZE, MINIMIZE
+
+# 创建模型
+model = Model("简单例子")
+
+# 添加变量
+x = model.add_var(name="x", vtype=CONTINUOUS, lb=0)
+y = model.add_var(name="y", vtype=INTEGER, lb=0)
+z = model.add_var(name="z", vtype=BINARY)
+
+# 添加约束
+model.add_constr(x + 2*y + 3*z <= 10, name="约束1")
+model.add_constr(x + y >= 1, name="约束2")
+
+# 设置目标函数
+model.set_objective(5*x + 3*y + 10*z, sense=MAXIMIZE)
+
+# 求解
+model.optimize()
+
+# 输出结果
+if model.status == 2:  # 最优状态
+    print(f"最优目标值: {model.objective_value}")
+    print(f"x = {x.value}")
+    print(f"y = {y.value}")
+    print(f"z = {z.value}")
+else:
+    print(f"求解失败，状态码: {model.status}")
+```
+
+### 图形界面
+
+通过以下命令启动桌面应用：
+
+```bash
+python main.py
+```
+
+或者启动Web界面：
+
+```bash
+python -m gui.web_gui
+```
+
+## 配置选项
+
+MIPSolver提供多种配置选项，可以通过环境变量或配置文件进行设置：
+
+### 环境变量
+
+- `MIPSOLVER_LOG_LEVEL`：日志级别(DEBUG, INFO, WARNING, ERROR)
+- `MIPSOLVER_MAX_THREADS`：最大线程数
+- `MIPSOLVER_TEMP_DIR`：临时文件目录
+
+### 配置文件
+
+在用户主目录创建`.mipsolver.conf`文件，使用YAML格式：
+
+```yaml
+solver:
+  log_level: INFO
+  max_threads: 4
+  time_limit: 3600  # 秒
+  gap_tolerance: 0.01  # 1%
+
+gui:
+  theme: light
+  language: zh_CN
+  autosave: true
+```
+
+## 常见问题与解决方案
+
+1. **编译错误**：
+   - 确保C++编译器支持C++17
+   - 检查CMake版本是否>=3.12
+   - 安装所有必要的开发库
+
+2. **运行时错误**：
+   - 检查Python版本是否>=3.8
+   - 确认所有依赖项都已正确安装
+   - 查看日志文件获取详细错误信息
+
+3. **性能问题**：
+   - 对大规模问题，调整内存限制
+   - 增加求解时间限制
+   - 考虑使用近似算法选项
+
+## 贡献指南
+
+我们欢迎各种形式的贡献，包括但不限于：
+
+- 提交Bug报告和功能请求
+- 改进文档和示例
+- 添加新功能或优化现有代码
+- 提供测试用例和基准测试
+
+请确保在提交Pull Request之前：
+
+1. 代码符合项目的编码规范
+2. 添加适当的测试用例
+3. 更新相关文档
+4. 所有现有测试都能通过
+
+## 许可证信息
+
+MIPSolver 采用 MIT 许可证开源，详情请参阅项目中的LICENSE文件。
+
+## 联系方式
+
+- 项目维护者：lytreallynb
+- GitHub: https://github.com/lytreallynb/MIPSolver
+- 问题追踪：https://github.com/lytreallynb/MIPSolver/issues
+
+---
+
+© 2025 MIPSolver 团队。保留所有权利。

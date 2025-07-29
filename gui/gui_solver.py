@@ -1,7 +1,27 @@
 #!/usr/bin/env python3
 """
 MIPSolver GUI界面
-支持文件上传、求解器选择、LaTeX报告生成
+
+这是MIPSolver的图形用户界面模块，提供完整的桌面应用程序功能：
+
+主要功能：
+1. 文件管理：支持MPS格式优化问题文件的上传和解析
+2. 模型构建：可视化的优化模型构建界面
+3. 求解器配置：多种求解算法选择和参数设置
+4. 结果展示：求解结果的详细显示和分析
+5. 报告生成：自动生成LaTeX格式的专业求解报告
+
+界面架构：
+- 采用标签页设计，功能模块清晰分离
+- 基于Tkinter构建，跨平台兼容性好
+- 响应式布局，适应不同屏幕尺寸
+- 丰富的交互元素，用户体验友好
+
+技术特点：
+- 异步求解：避免界面冻结，提供进度反馈
+- 错误处理：完善的异常捕获和用户提示
+- 数据验证：输入数据的格式检查和合理性验证
+- 可扩展性：模块化设计便于功能扩展
 """
 import sys
 import os
@@ -13,6 +33,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
 
+# 尝试导入GUI依赖库
 try:
     import tkinter as tk
     from tkinter import ttk, filedialog, messagebox, scrolledtext
@@ -21,7 +42,7 @@ except ImportError:
     print("请安装tkinter: pip install tkinter")
     sys.exit(1)
 
-# 尝试导入MIPSolver
+# 尝试导入MIPSolver核心模块
 try:
     import mipsolver as mp
     from mipsolver import Model, CONTINUOUS, INTEGER, BINARY, MAXIMIZE, MINIMIZE
@@ -30,7 +51,7 @@ try:
 except ImportError as e:
     print(f"MIPSolver导入失败: {e}")
     HAS_MIPSOLVER = False
-    # 创建模拟的常量
+    # 创建模拟的常量，保证GUI在开发环境下能正常运行
     CONTINUOUS = 0
     INTEGER = 2
     BINARY = 1
@@ -38,65 +59,116 @@ except ImportError as e:
     MINIMIZE = 1
 
 class MIPSolverGUI:
+    """
+    MIPSolver图形用户界面主类
+    
+    这个类实现了完整的桌面应用程序界面，包括：
+    
+    界面组件：
+    - 文件上传标签页：MPS文件选择和预览
+    - 模型构建标签页：交互式优化模型构建
+    - 求解结果标签页：求解过程监控和结果展示
+    - 报告生成标签页：LaTeX报告配置和生成
+    
+    数据管理：
+    - model: 当前的优化模型实例
+    - solution: 最新的求解结果
+    - problem_data: 问题数据的字典存储
+    - solver_options: 可用求解器的配置选项
+    
+    设计模式：
+    - 采用MVC模式分离界面和逻辑
+    - 事件驱动的用户交互处理
+    - 状态管理确保界面数据一致性
+    """
     def __init__(self):
+        # 创建主窗口
         self.root = tk.Tk()
         self.root.title("MIPSolver - 混合整数规划求解器")
         self.root.geometry("1200x800")
         self.root.configure(bg='#f0f0f0')
         
-        # 数据存储
-        self.model = None
-        self.solution = None
-        self.problem_data = {}
+        # 初始化数据存储
+        self.model = None              # 当前优化模型
+        self.solution = None           # 当前求解结果
+        self.problem_data = {}         # 问题数据缓存
+        
+        # 求解器选项配置
+        # 这里定义了可用的求解算法及其对应的后端实现
         self.solver_options = {
-            "Branch & Bound": "mipsolver",
-            "Simplex (LP)": "mipsolver"
+            "Branch & Bound": "mipsolver",  # 分支定界法
+            "Simplex (LP)": "mipsolver"     # 单纯形法（仅用于线性规划松弛）
         }
         
+        # 初始化用户界面
         self.setup_ui()
         
     def setup_ui(self):
-        """设置用户界面"""
-        # 主框架
+        """
+        设置用户界面布局和组件
+        
+        界面结构：
+        1. 主框架：包含所有界面元素的根容器
+        2. 标题区域：显示应用程序名称和版本信息
+        3. 标签页容器：组织不同功能模块的界面
+        4. 各功能标签页：文件上传、模型构建、求解结果、报告生成
+        
+        设计原则：
+        - 响应式布局：自适应窗口大小变化
+        - 直观导航：清晰的标签页组织
+        - 视觉一致性：统一的颜色和字体风格
+        """
+        # 创建主框架容器
         main_frame = ttk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        # 标题
+        # 创建应用程序标题
         title_label = tk.Label(
             main_frame, 
             text="MIPSolver 混合整数规划求解器",
-            font=Font(size=20, weight='bold'),
-            bg='#f0f0f0',
-            fg='#2c3e50'
+            font=Font(size=20, weight='bold'),  # 使用粗体大号字体
+            bg='#f0f0f0',                       # 背景色与主窗口一致
+            fg='#2c3e50'                        # 深色前景色提高可读性
         )
-        title_label.pack(pady=(0, 20))
+        title_label.pack(pady=(0, 20))  # 设置底部间距
         
-        # 创建notebook用于标签页
+        # 创建标签页容器（Notebook组件）
+        # 这是主要的界面组织方式，将不同功能分组到标签页中
         notebook = ttk.Notebook(main_frame)
         notebook.pack(fill=tk.BOTH, expand=True)
         
-        # 文件上传标签页
-        self.setup_file_upload_tab(notebook)
-        
-        # 模型构建标签页
-        self.setup_model_builder_tab(notebook)
-        
-        # 求解结果标签页
-        self.setup_solution_tab(notebook)
-        
-        # 报告生成标签页
-        self.setup_report_tab(notebook)
+        # 初始化各个功能标签页
+        self.setup_file_upload_tab(notebook)    # 文件上传和预览
+        self.setup_model_builder_tab(notebook)  # 交互式模型构建
+        self.setup_solution_tab(notebook)       # 求解结果展示
+        self.setup_report_tab(notebook)         # 报告生成配置
         
     def setup_file_upload_tab(self, notebook):
-        """文件上传标签页"""
+        """
+        设置文件上传标签页
+        
+        功能说明：
+        - MPS文件选择：支持标准的混合整数规划文件格式
+        - 文件预览：显示选中文件的基本信息和内容摘要
+        - 格式验证：检查文件格式的正确性
+        - 数据解析：将MPS文件解析为内部数据结构
+        
+        界面组件：
+        - 文件路径显示框：显示当前选中的文件路径
+        - 浏览按钮：打开文件选择对话框
+        - 文件信息区域：显示文件的详细信息
+        - 加载按钮：将文件数据加载到求解器中
+        """
         upload_frame = ttk.Frame(notebook)
         notebook.add(upload_frame, text="文件上传")
         
         # 文件选择区域
+        # 使用LabelFrame提供视觉分组和标题
         file_frame = ttk.LabelFrame(upload_frame, text="选择问题文件", padding=20)
         file_frame.pack(fill=tk.X, padx=10, pady=10)
         
-        # 文件路径显示
+        # 文件路径显示变量
+        # 使用StringVar实现数据绑定，自动更新界面显示
         self.file_path_var = tk.StringVar()
         path_entry = ttk.Entry(file_frame, textvariable=self.file_path_var, width=60)
         path_entry.pack(side=tk.LEFT, padx=(0, 10))

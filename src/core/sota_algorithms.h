@@ -1,6 +1,38 @@
 #ifndef SOTA_ALGORITHMS_H
 #define SOTA_ALGORITHMS_H
 
+/*
+ * SOTA（State-of-the-Art）算法集合
+ * 
+ * 这个头文件实现了混合整数规划领域最先进的求解技术，包括：
+ * 
+ * 1. 自适应大邻域搜索 (Adaptive Large Neighborhood Search, ALNS)
+ *    - 启发式搜索算法，适用于大规模问题的快速求解
+ *    - 动态调整破坏和修复算子的权重
+ *    - 结合模拟退火接受准则，平衡探索和开发
+ * 
+ * 2. 机器学习驱动的分支选择 (ML-guided Branching)
+ *    - 使用特征提取和预测模型改进分支变量选择
+ *    - 基于历史求解经验学习最优分支策略
+ *    - 显著提高分支定界算法的效率
+ * 
+ * 3. 启发式预处理 (Heuristic Preprocessing)
+ *    - 问题规模缩减技术，消除冗余变量和约束
+ *    - 变量固定和约束聚合
+ *    - 隐含边界检测和系数强化
+ * 
+ * 4. 动态割平面生成 (Dynamic Cutting Planes)
+ *    - 多种类型的有效不等式生成
+ *    - 自适应割平面选择和管理
+ *    - 改善线性松弛的紧致性
+ * 
+ * 设计理念：
+ * - 模块化架构，各算法可独立使用或组合
+ * - 参数自适应，减少人工调参需求
+ * - 高效实现，适用于工业级应用
+ * - 理论保证与实践效果的良好平衡
+ */
+
 #include "core.h"
 #include "solution.h"
 #include <vector>
@@ -21,17 +53,49 @@ namespace MIPSolver {
  */
 
 // 自适应大邻域搜索 (ALNS)
+/*
+ * 自适应大邻域搜索算法类
+ * 
+ * ALNS是一种元启发式算法，特别适用于组合优化问题。算法核心思想：
+ * 
+ * 1. 破坏-修复机制：
+ *    - 破坏算子：从当前解中移除一部分变量的赋值
+ *    - 修复算子：为被移除的变量重新赋值，构造新解
+ * 
+ * 2. 自适应权重调整：
+ *    - 根据算子的历史表现动态调整选择概率
+ *    - 好的算子获得更高权重，差的算子权重降低
+ * 
+ * 3. 接受准则：
+ *    - 使用模拟退火策略接受劣解
+ *    - 避免陷入局部最优，增强全局搜索能力
+ * 
+ * 适用场景：
+ * - 大规模混合整数规划问题
+ * - 需要快速获得高质量可行解的情况
+ * - 精确算法求解时间过长的复杂问题
+ */
 class AdaptiveLargeNeighborhoodSearch {
 public:
+    /*
+     * ALNS算法参数结构
+     * 
+     * 包含算法运行所需的所有可调参数：
+     * - max_iterations: 最大迭代次数，控制算法运行时间
+     * - alpha: 权重衰减因子，控制历史信息的重要性
+     * - temperature_start/end: 模拟退火的初始和终止温度
+     * - segment_size: 权重更新的周期长度
+     * - 奖励参数: 不同质量解的奖励分值
+     */
     struct ALNSParameters {
-        int max_iterations = 1000;
-        double alpha = 0.1;  // 权重衰减因子
-        double temperature_start = 100.0;
-        double temperature_end = 1.0;
-        int segment_size = 100;
-        double best_reward = 30.0;
-        double better_reward = 15.0;
-        double accepted_reward = 5.0;
+        int max_iterations = 1000;         // 最大迭代次数
+        double alpha = 0.1;                // 权重衰减因子（0-1之间）
+        double temperature_start = 100.0;  // 初始温度（接受劣解的概率较高）
+        double temperature_end = 1.0;      // 终止温度（接受劣解的概率较低）
+        int segment_size = 100;            // 权重更新周期
+        double best_reward = 30.0;         // 找到新最优解的奖励
+        double better_reward = 15.0;       // 找到更好解的奖励
+        double accepted_reward = 5.0;      // 解被接受的基础奖励
     };
 
 private:

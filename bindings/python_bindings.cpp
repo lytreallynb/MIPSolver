@@ -4,9 +4,41 @@
 #include "../src/solution.h"
 #include "../src/branch_bound_solver.h"
 
+/*
+ * Python绑定模块
+ * 
+ * 这个文件使用pybind11库将C++实现的MIPSolver核心功能暴露给Python：
+ * 
+ * 1. 主要目的：
+ *    - 提供高性能的C++求解器给Python用户
+ *    - 保持API的一致性和易用性
+ *    - 自动处理Python和C++之间的类型转换
+ * 
+ * 2. 绑定策略：
+ *    - 直接暴露核心C++类（Problem, Solution, Solver等）
+ *    - 使用pybind11的自动类型转换功能
+ *    - 保持C++和Python接口的语义一致性
+ * 
+ * 3. 性能优化：
+ *    - 最小化Python/C++边界的数据拷贝
+ *    - 利用pybind11的智能指针管理
+ *    - 支持numpy数组的零拷贝访问
+ * 
+ * 4. 错误处理：
+ *    - C++异常自动转换为Python异常
+ *    - 保持错误信息的完整性和可读性
+ */
+
 namespace py = pybind11;
 
-// PYBIND11_MODULE defines the entry point for the Python extension module
+// PYBIND11_MODULE定义Python扩展模块的入口点
+/*
+ * 模块定义宏
+ * 
+ * 这个宏创建了名为"_solver"的Python模块，包含所有绑定的C++功能。
+ * 模块名前的下划线表示这是一个内部实现模块，不建议用户直接使用。
+ * 用户应该通过mipsolver包的高级接口访问这些功能。
+ */
 PYBIND11_MODULE(_solver, m) {
     m.doc() = "MIPSolver C++ core solver module";
 

@@ -1,53 +1,77 @@
-# pyproject.toml - 现代Python打包配置
+# pyproject.toml - 现代Python打包配置文件
+#
+# 这是MIPSolver项目的现代Python打包配置，采用PEP 518标准
+# 
+# 主要功能：
+# 1. 构建系统配置：定义构建依赖和后端
+# 2. 项目元数据：版本、作者、依赖等信息
+# 3. 发布配置：PyPI上传和分发设置
+# 4. 开发环境：可选依赖和开发工具配置
+#
+# 设计理念：
+# - 使用声明式配置，避免setup.py的命令式代码
+# - 支持现代Python版本（3.8+）
+# - 清晰的依赖管理和版本控制
+# - 便于CI/CD集成和自动化发布
+
 [build-system]
+# 构建系统配置
+# 定义构建MIPSolver所需的工具和依赖
 requires = [
-    "setuptools>=61.0",
-    "wheel",
-    "pybind11>=2.10.0",
-    "cmake>=3.12"
+    "setuptools>=61.0",      # 现代setuptools，支持pyproject.toml
+    "wheel",                 # 构建wheel分发包
+    "pybind11>=2.10.0",     # C++/Python绑定库
+    "cmake>=3.12"           # C++代码构建系统
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "setuptools.build_meta"  # 使用setuptools作为构建后端
 
 [project]
-name = "mipsolver"
-version = "1.0.5"
+# 项目基本信息
+name = "mipsolver"                    # PyPI包名，必须全局唯一
+version = "1.0.5"                     # 版本号，遵循语义化版本规范
 description = "高性能混合整数规划求解器，现代Python API"
-readme = "README.md"
+readme = "README.md"                  # 项目说明文档
 authors = [
-    {name = "lytreallynb"}
+    {name = "lytreallynb"}            # 项目作者信息
 ]
 
-# 支持Python 3.8到3.13
+# Python版本兼容性
+# 支持Python 3.8到3.13，覆盖当前主流和未来版本
 requires-python = ">=3.8"
 
 # 运行时依赖
+# MIPSolver核心功能不依赖外部Python包，保持轻量级
 dependencies = []
 
+# PyPI分类信息，帮助用户发现和理解项目
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research",
-    "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
+    "Development Status :: 4 - Beta",                        # 开发状态：Beta版
+    "Intended Audience :: Science/Research",                 # 目标用户：科研人员
+    "Intended Audience :: Developers",                       # 目标用户：开发者
+    "Programming Language :: Python :: 3",                   # 编程语言
+    "Programming Language :: Python :: 3.8",               # 支持的Python版本
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: C++",
-    "Topic :: Scientific/Engineering :: Mathematics",
-    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: C++",                           # 底层实现语言
+    "Topic :: Scientific/Engineering :: Mathematics",        # 应用领域：数学
+    "Topic :: Software Development :: Libraries :: Python Modules",  # 软件类别
 ]
 
+# 搜索关键词，提高项目可发现性
 keywords = ["optimization", "linear-programming", "integer-programming", "mip", "solver"]
 
+# 项目相关链接，提供用户获取更多信息的途径
 [project.urls]
-Homepage = "https://github.com/lytreallynb/MIPSolver"
-Repository = "https://github.com/lytreallynb/MIPSolver.git"
-Documentation = "https://github.com/lytreallynb/MIPSolver#readme"
-"Bug Tracker" = "https://github.com/lytreallynb/MIPSolver/issues"
+Homepage = "https://github.com/lytreallynb/MIPSolver"              # 项目主页
+Repository = "https://github.com/lytreallynb/MIPSolver.git"        # 源代码仓库
+Documentation = "https://github.com/lytreallynb/MIPSolver#readme"  # 文档链接
+"Bug Tracker" = "https://github.com/lytreallynb/MIPSolver/issues"  # 问题追踪
 
 # 告诉setuptools在哪里找到Python包
+# 这是关键配置，指定包的位置和结构
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["mipsolver*"]

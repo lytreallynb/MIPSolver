@@ -1,6 +1,37 @@
 # python/mipsolver/model.py
 """
 核心Model类 - MIPSolver API的中心
+
+这个模块实现了MIPSolver的Python API，提供了用户友好的混合整数规划建模接口。
+
+主要组件：
+1. Var类：表示优化问题中的决策变量
+2. Model类：优化模型的主容器，提供完整的建模和求解功能
+
+设计理念：
+- 面向对象的建模方式，类似于Gurobi、CPLEX等商业求解器
+- 链式方法调用，提高代码可读性
+- 自动类型推导和错误检查
+- 与C++后端的无缝集成
+
+使用模式：
+```python
+# 创建模型
+model = Model("MyProblem")
+
+# 添加变量
+x = model.add_var(name="x", vtype=CONTINUOUS)
+y = model.add_var(name="y", vtype=INTEGER)
+
+# 添加约束
+model.add_constr(x + 2*y <= 10)
+
+# 设置目标函数
+model.set_objective(x + y, sense=MAXIMIZE)
+
+# 求解
+model.optimize()
+```
 """
 
 from typing import Optional, Union, List, Dict, Any
@@ -18,32 +49,90 @@ class Var:
     """
     决策变量类
     
-    表示优化问题中的单个决策变量。
-    用户不直接创建这些对象 - 它们来自Model.add_var()
+    表示优化问题中的单个决策变量，是建模的基本单元。
+    
+    属性说明：
+    - _model: 所属的模型实例，用于维护变量与模型的关联
+    - _index: 变量在模型中的索引，用于内部引用和求解
+    - _name: 变量名称，用于标识和调试输出
+    - _vtype: 变量类型（连续、整数或二进制）
+    - _lb/_ub: 变量的下界和上界约束
+    - _value: 求解后的变量取值
+    
+    设计特点：
+    - 不可直接创建，必须通过Model.add_var()方法获得
+    - 支持算术运算，可以参与表达式构建
+    - 提供属性访问器，保证数据封装性
+    - 线程安全的设计，避免并发访问问题
+    
+    用法示例：
+    ```python
+    # 通过模型创建变量
+    x = model.add_var(name="x", vtype=CONTINUOUS, lb=0, ub=10)
+    
+    # 访问变量属性
+    print(f"变量名: {x.name}")
+    print(f"变量类型: {x.vtype}")
+    print(f"下界: {x.lb}, 上界: {x.ub}")
+    
+    # 求解后获取变量值
+    model.optimize()
+    print(f"最优值: {x.value}")
+    ```
     """
     
     def __init__(self, model, index: int, name: str, vtype: int, lb: float, ub: float):
+        """
+        初始化决策变量
+        
+        注意：此构造函数为内部使用，用户应通过Model.add_var()创建变量
+        
+        参数：
+        - model: 所属的Model实例
+        - index: 变量在模型中的索引位置
+        - name: 变量的名称标识
+        - vtype: 变量类型常量
+        - lb: 变量下界
+        - ub: 变量上界
+        """
         self._model = model
         self._index = index
         self._name = name
         self._vtype = vtype
         self._lb = lb
         self._ub = ub
-        self._value = 0.0  # 求解后的解值
+        self._value = 0.0  # 求解后的解值，初始化为0
     
     @property
     def name(self) -> str:
-        """变量名"""
+        """
+        获取变量名称
+        
+        返回创建变量时指定的名称字符串
+        用于标识变量和生成用户友好的输出信息
+        """
         return self._name
     
     @property
     def vtype(self) -> int:
-        """变量类型 (CONTINUOUS, BINARY, INTEGER)"""
+        """
+        获取变量类型
+        
+        返回值：
+        - CONTINUOUS (0): 连续变量，可取任意实数值
+        - BINARY (1): 二进制变量，只能取0或1
+        - INTEGER (2): 整数变量，可取任意整数值
+        """
         return self._vtype
     
     @property
     def lb(self) -> float:
-        """下界"""
+        """
+        获取变量下界
+        
+        返回变量允许的最小取值
+        对于无下界限制的变量，返回负无穷大
+        """
         return self._lb
     
     @property

@@ -1,6 +1,33 @@
 #ifndef MIP_SOLVER_CORE_H
 #define MIP_SOLVER_CORE_H
 
+/*
+ * MIPSolver 核心头文件
+ * 
+ * 这是MIPSolver的核心数据结构和类定义文件，包含：
+ * 
+ * 1. 基础数据类型：
+ *    - Variable: 决策变量类，表示优化问题中的未知数
+ *    - Constraint: 约束条件类，表示问题的限制条件
+ *    - Problem: 问题类，整个优化问题的容器
+ * 
+ * 2. 枚举类型：
+ *    - VariableType: 变量类型（连续、整数、二进制）
+ *    - ConstraintType: 约束类型（<=, >=, =）
+ *    - ObjectiveType: 目标函数类型（最大化、最小化）
+ * 
+ * 3. 设计原则：
+ *    - 面向对象设计，清晰的接口分离
+ *    - 高效的内存管理和数据存储
+ *    - 可扩展的架构，便于添加新的求解算法
+ *    - 类型安全的枚举，避免魔术数字
+ * 
+ * 4. 性能考虑：
+ *    - 使用unordered_map实现O(1)系数查找
+ *    - 避免不必要的数据拷贝
+ *    - 内联小函数提高执行效率
+ */
+
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -9,38 +36,51 @@
 
 namespace MIPSolver {
 
-// Forward declarations
+// 前向声明 - 避免循环依赖
 class Variable;
 class Constraint;
 class Problem;
 
-// Enum classes for variable types, constraint types, and objective types
+// 变量类型枚举 - 定义决策变量的数学性质
 enum class VariableType {
-    CONTINUOUS,
-    INTEGER,
-    BINARY
+    CONTINUOUS,  // 连续变量：可以取任意实数值
+    INTEGER,     // 整数变量：只能取整数值
+    BINARY       // 二进制变量：只能取0或1
 };
 
+// 约束类型枚举 - 定义约束条件的数学关系
 enum class ConstraintType {
-    LESS_EQUAL,
-    GREATER_EQUAL,
-    EQUAL
+    LESS_EQUAL,     // 小于等于约束：左边 <= 右边
+    GREATER_EQUAL,  // 大于等于约束：左边 >= 右边
+    EQUAL           // 等式约束：左边 = 右边
 };
 
+// 目标函数类型枚举 - 定义优化的方向
 enum class ObjectiveType {
-    MAXIMIZE,
-    MINIMIZE
+    MAXIMIZE,   // 最大化：寻找使目标函数最大的解
+    MINIMIZE    // 最小化：寻找使目标函数最小的解
 };
 
-// Variable class --> represent decision variables in MIP problems
+// Variable类 - 表示优化问题中的决策变量
 class Variable {
     public:
+        /*
+         * 构造函数
+         * 
+         * 参数说明：
+         * @param name: 变量名称，用于标识和调试
+         * @param type: 变量类型，默认为连续变量
+         * 
+         * 初始化：
+         * - 边界默认为负无穷到正无穷（无约束）
+         * - 目标函数系数默认为0（不影响目标函数）
+         */
         Variable (const std::string& name, VariableType type = VariableType::CONTINUOUS)
             : name_(name), type_(type), lower_bound_(-std::numeric_limits<double>::infinity()),
               upper_bound_(std::numeric_limits<double>::infinity()),
               coefficient_(0.0) {}
 
-        // Getters
+        // 获取器函数 - 提供只读访问私有成员
         const std::string& getName() const { return name_; }
         VariableType getType() const { return type_; }
         double getLowerBound() const { return lower_bound_; }
