@@ -255,6 +255,4 @@ python3 -u web_gui.py
 
 如有问题或建议，请通过以下方式联系：
 
-- 📧 Email: support@mipsolver.com
-- 🐛 Issues: GitHub Issues
-- 文档: 项目Wiki 
+- 📧 Email: yutonglvv@gmail.com
